@@ -6,6 +6,8 @@ use async_std::task::spawn;
 use async_std::prelude::*;
 use futures::StreamExt;
 use std::time::Duration;
+use std::marker::Unpin;
+use async_std::io::{Read, Write};
 
 #[async_std::main]
 async fn main() {
@@ -20,7 +22,7 @@ async fn main() {
     }).await;
 }
 
-async fn handle_connection(mut stream: TcpStream) {
+async fn handle_connection(mut stream: impl Read + Write + Unpin) {
     let mut buffer = [0; 1024];
     stream.read(&mut buffer).await.unwrap();
     let get = b"GET / HTTP/1.1\r\n";
